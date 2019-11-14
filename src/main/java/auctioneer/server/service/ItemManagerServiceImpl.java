@@ -3,8 +3,12 @@ package auctioneer.server.service;
 import auctioneer.model.Item;
 import auctioneer.server.repository.ItemRepository;
 import auctioneer.server.repository.ItemRepositoryStorageImpl;
+import auctioneer.server.utils.BidTooLowException;
+import auctioneer.server.utils.ItemAlreadyOnAuctionException;
+import auctioneer.server.utils.ItemNotFoundException;
 
 import java.rmi.RemoteException;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 public class ItemManagerServiceImpl implements ItemManagerService {
@@ -15,8 +19,12 @@ public class ItemManagerServiceImpl implements ItemManagerService {
     }
 
     @Override
-    public void add(Item item) {
-        itemRepository.add(item);
+    public void placeItemForBid(String ownerName, String itemName, String itemDesc, double startBid, int auctionTime) throws ItemAlreadyOnAuctionException {
+        if (isItemAlreadyPresent(itemName)) {
+            throw new ItemAlreadyOnAuctionException("Item [" + itemName + "] is already present on auction");
+        }
+
+        itemRepository.add(new Item(ownerName, itemName, itemDesc, startBid, "no bidders", LocalDateTime.now().plusSeconds(auctionTime)));
     }
 
     @Override
@@ -25,8 +33,8 @@ public class ItemManagerServiceImpl implements ItemManagerService {
     }
 
     @Override
-    public Item get(String itemName) {
-        return null;
+    public Item get(String itemName) throws ItemNotFoundException {
+        return itemRepository.get(itemName);
     }
 
     @Override
@@ -35,16 +43,21 @@ public class ItemManagerServiceImpl implements ItemManagerService {
     }
 
     @Override
-    public void bidOnItem(String bidderName, String itemName, double bid) throws RemoteException {
+    public void bidOnItem(String bidderName, String itemName, double bid) throws RemoteException, ItemNotFoundException {
         Item retrievedItem = itemRepository.get(itemName);
 
         if (retrievedItem.getCurrentBid() > bid) {
-            throw new RemoteException("The bid was too low");
+            throw new BidTooLowException("Bid was too low.");
         }
 
         retrievedItem.setCurrentBidderName(bidderName);
         retrievedItem.setCurrentBid(bid);
         retrievedItem.updateObservers();
 
+    }
+
+    private boolean isItemAlreadyPresent(String itemName) {
+        Map<String, Item> items = getMany();
+        return items.entrySet().stream().anyMatch(entry -> entry.getKey().equalsIgnoreCase(itemName));
     }
 }

@@ -9,7 +9,6 @@ import java.util.stream.Collectors;
 
 public class ItemRepositoryStorageImpl implements ItemRepository {
     private static Map<String, Item> storage = new HashMap<>();
-//            InMemoryStorage.getStorage();
 
     @Override
     public void add(Item item) {
