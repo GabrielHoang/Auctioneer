@@ -1,6 +1,6 @@
 ###Starting RMI registry:
 
-start rmiregistry -J-Djava.rmi.server.useCodebaseOnly=false
+Not needed. It's created programatically by server side.
 
 ###Client & Server VM options:
 
