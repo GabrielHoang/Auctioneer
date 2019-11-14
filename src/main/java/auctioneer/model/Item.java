@@ -1,16 +1,17 @@
 package auctioneer.model;
 
 import auctioneer.interfaces.IAuctionListener;
+import auctioneer.server.utils.ObserverAlreadyRegisteredException;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.rmi.RemoteException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Observable;
 
 @Data
-public class Item extends Observable implements Serializable {
+public class Item implements Serializable {
 
     private String ownerName;
     private String itemName;
@@ -27,9 +28,13 @@ public class Item extends Observable implements Serializable {
         this.currentBid = currentBid;
         this.currentBidderName = currentBidderName;
         this.expirationTime = expirationTime;
+        this.observers = new ArrayList<>();
     }
 
-    public void registerObserver(IAuctionListener observer) {
+    public void registerObserver(IAuctionListener observer) throws ObserverAlreadyRegisteredException {
+        if (!observers.isEmpty() && observers.contains(observer)) {
+            throw new ObserverAlreadyRegisteredException("Client is already observing this item");
+        }
         observers.add(observer);
     }
 
