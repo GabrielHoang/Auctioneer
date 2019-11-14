@@ -1,4 +1,4 @@
-package auctioneer;
+package auctioneer.interfaces;
 
 import auctioneer.model.Item;
 
