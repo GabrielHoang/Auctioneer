@@ -1,25 +1,61 @@
 package auctioneer.client;
 
+import auctioneer.interfaces.IAuctionListener;
+import auctioneer.model.Item;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.fxml.Initializable;
+import javafx.scene.control.*;
 
-public class HomeController {
+import java.net.URL;
+import java.rmi.RemoteException;
+import java.util.ResourceBundle;
 
-    @FXML
-    private TableView<TableColumn> itemTableView;
-
-    @FXML
-    private TableColumn<?, ?> idColumn;
+public class HomeController implements IAuctionListener, Initializable {
 
     @FXML
-    private TableColumn<?, ?> itemNameColumn;
+    private TableView<Item> itemTableView;
 
     @FXML
-    private TableColumn<?, ?> currentPriceColumn;
+    private TableColumn<Item, String> idColumn;
+
+    @FXML
+    private TableColumn<Item, String> itemNameColumn;
+
+    @FXML
+    private TableColumn<Item, String> currentPriceColumn;
 
     @FXML
     private Button bidButton;
 
+    @FXML
+    private TextField bidderNameTextField;
+
+    @FXML
+    private Label bidderNameLabel;
+
+    @FXML
+    private Label strategyLabel;
+
+    @FXML
+    private ChoiceBox<?> strategyChoiceBox;
+
+    @FXML
+    private Label bidAmountLabel;
+
+    @FXML
+    private Spinner<?> bidAmountSpinner;
+
+    @FXML
+    private TextArea messageBoxTextArea;
+
+    @Override
+    public void update(Item item) throws RemoteException {
+
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+//        itemNameColumn.setCellValueFactory(item -> item.getValue().getItemName());
+        //TODO create observable items
+    }
 }
