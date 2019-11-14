@@ -1,6 +1,7 @@
 package auctioneer.client;
 
-import auctioneer.HelloInterface;
+import auctioneer.interfaces.IAuctionServer;
+import auctioneer.model.Item;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -11,6 +12,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.util.Arrays;
 
 public class ClientOperation extends Application {
     public static void main(String[] args) {
@@ -27,12 +29,15 @@ public class ClientOperation extends Application {
     }
 
     private void connectClient() {
-        String name = "helloTest";
+        String name = "english";
         try {
             Registry registry = LocateRegistry.getRegistry();
-            HelloInterface service = (HelloInterface) registry.lookup(name);
-            String result = service.say("test");
-            System.out.println(result);
+            IAuctionServer englishAuctionService = (IAuctionServer) registry.lookup(name);
+
+            Item[] items = englishAuctionService.getItems();
+            Arrays.stream(items).forEach(item -> System.out.println(item.getItemName()));
+
+
         } catch (RemoteException | NotBoundException e) {
             e.printStackTrace();
         }
