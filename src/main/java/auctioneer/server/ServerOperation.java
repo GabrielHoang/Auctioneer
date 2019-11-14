@@ -1,6 +1,6 @@
 package auctioneer.server;
 
-import auctioneer.HelloInterface;
+import auctioneer.interfaces.IAuctionServer;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -11,16 +11,13 @@ public class ServerOperation {
     public static void main(String[] args) {
         System.setProperty("java.security.policy", "file:java.policy");
 
-//        if (System.getSecurityManager() == null) {
-//            System.setSecurityManager(new SecurityManager());
-//        }
-
-        String name="helloTest";
-        HelloInterface server = new HelloInterfaceImpl();
+        String english = "english";
+        AuctionFactory auctionFactory = new AuctionFactory();
+        IAuctionServer englishAuctionServer = auctionFactory.create(english);
         try {
-            HelloInterface stub = (HelloInterface) UnicastRemoteObject.exportObject(server, 0);
-            Registry registry = LocateRegistry.getRegistry();
-            registry.rebind(name, stub);
+            IAuctionServer stub = (IAuctionServer) UnicastRemoteObject.exportObject(englishAuctionServer, 0);
+            Registry registry = LocateRegistry.createRegistry(1099);
+            registry.rebind(english, stub);
             System.out.println("Server started");
         } catch (RemoteException e) {
             e.printStackTrace();
