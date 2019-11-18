@@ -3,8 +3,8 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<fx:root xmlns:fx="http://javafx.com/fxml/1" prefHeight="523.0" prefWidth="795.0" type="VBox"
-         xmlns="http://javafx.com/javafx/11.0.1" fx:controller="auctioneer.client.HomeController">
+<VBox xmlns:fx="http://javafx.com/fxml/1" prefHeight="523.0" prefWidth="795.0" xmlns="http://javafx.com/javafx/11.0.1"
+      fx:controller="auctioneer.client.HomeController">
   <children>
     <MenuBar prefHeight="36.0" prefWidth="527.0" VBox.vgrow="NEVER">
       <menus>
@@ -47,14 +47,14 @@
     </MenuBar>
       <HBox prefHeight="598.0" prefWidth="872.0">
          <children>
-             <TableView fx:id="itemTableView" prefHeight="549.0" prefWidth="394.0">
+             <TableView fx:id="itemTableView" prefHeight="498.0" prefWidth="559.0">
               <columns>
-                <TableColumn fx:id="idColumn" prefWidth="39.0" text="id" />
-                  <TableColumn fx:id="itemNameColumn" prefWidth="209.0" text="item"/>
-                  <TableColumn fx:id="currentPriceColumn" prefWidth="112.0" text="current price"/>
+                  <TableColumn fx:id="itemNameColumn" prefWidth="232.0" text="item"/>
+                  <TableColumn fx:id="currentPriceColumn" prefWidth="132.0" text="current price"/>
+                  <TableColumn fx:id="bidderColumn" prefWidth="108.0" text="bidder"/>
               </columns>
             </TableView>
-             <VBox prefHeight="559.0" prefWidth="466.0">
+             <VBox prefHeight="498.0" prefWidth="409.0">
                  <children>
                      <GridPane prefHeight="314.0" prefWidth="479.0">
                          <columnConstraints>
@@ -91,20 +91,22 @@
                              </ChoiceBox>
                              <Label fx:id="bidAmountLabel" text="Bid amount" GridPane.halignment="CENTER"
                                     GridPane.rowIndex="2" GridPane.valignment="CENTER"/>
-                             <Spinner fx:id="bidAmountSpinner" editable="true" prefWidth="209.0"
-                                      GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2"
-                                      GridPane.valignment="CENTER">
+                             <TextField fx:id="bidTextField" alignment="CENTER" prefHeight="25.0" prefWidth="150.0"
+                                        promptText="insert bid amount" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                 <opaqueInsets>
+                                     <Insets/>
+                                 </opaqueInsets>
                                  <GridPane.margin>
                                      <Insets left="15.0" right="15.0"/>
                                  </GridPane.margin>
-                             </Spinner>
+                             </TextField>
                          </children>
                      </GridPane>
-                     <TextArea fx:id="messageBoxTextArea" disable="true" prefHeight="291.0" prefWidth="434.0"
+                     <TextArea fx:id="messageBoxTextArea" editable="false" prefHeight="291.0" prefWidth="434.0"
                                promptText="Auction service messeage area"/>
                  </children>
              </VBox>
          </children>
       </HBox>
   </children>
-</fx:root>
+</VBox>
