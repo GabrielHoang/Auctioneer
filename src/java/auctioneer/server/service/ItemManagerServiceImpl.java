@@ -53,6 +53,7 @@ public class ItemManagerServiceImpl implements ItemManagerService {
         retrievedItem.setCurrentBidderName(bidderName);
         retrievedItem.setCurrentBid(bid);
         retrievedItem.updateObservers();
+        System.out.println("Updated " + itemName + " (" + bidderName + ", " + bid + ")");
 
     }
 

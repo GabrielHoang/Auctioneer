@@ -8,7 +8,6 @@ import auctioneer.server.service.ItemManagerService;
 import auctioneer.server.service.ItemManagerServiceImpl;
 import auctioneer.server.utils.ItemAlreadyOnAuctionException;
 import auctioneer.server.utils.ItemNotFoundException;
-import auctioneer.server.utils.ObserverAlreadyRegisteredException;
 
 import java.rmi.RemoteException;
 import java.util.Map;
@@ -72,8 +71,6 @@ public class EnglishAuction extends Auction implements IAuctionServer {
         try {
             Item item = itemManagerService.get(itemName);
             item.registerObserver(al);
-        } catch (ObserverAlreadyRegisteredException e) {
-            e.getMessage();
         } catch (ItemNotFoundException e) {
             e.getMessage();
         }
