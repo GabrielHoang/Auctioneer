@@ -1,7 +1,6 @@
 package auctioneer.model;
 
 import auctioneer.interfaces.IAuctionListener;
-import auctioneer.server.utils.ObserverAlreadyRegisteredException;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -31,11 +30,10 @@ public class Item implements Serializable {
         this.observers = new ArrayList<>();
     }
 
-    public void registerObserver(IAuctionListener observer) throws ObserverAlreadyRegisteredException {
-        if (!observers.isEmpty() && observers.contains(observer)) {
-            throw new ObserverAlreadyRegisteredException("Client is already observing this item");
+    public void registerObserver(IAuctionListener observer) {
+        if (observers.isEmpty() || !observers.contains(observer)) {
+            observers.add(observer);
         }
-        observers.add(observer);
     }
 
     public void removeObserver(IAuctionListener observer) {
