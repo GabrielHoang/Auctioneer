@@ -43,7 +43,7 @@ public class ItemManagerServiceImpl implements ItemManagerService {
     }
 
     @Override
-    public void bidOnItem(String bidderName, String itemName, double bid) throws RemoteException, ItemNotFoundException {
+    public void bidOnItem(String bidderName, String itemName, double bid) throws RemoteException, ItemNotFoundException, BidTooLowException {
         Item retrievedItem = itemRepository.get(itemName);
 
         if (retrievedItem.getCurrentBid() > bid) {

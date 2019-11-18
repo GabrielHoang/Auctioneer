@@ -102,7 +102,7 @@ public class HomeController extends UnicastRemoteObject implements Initializable
         bidButton.setOnAction(event -> {
             try {
                 placeBid();
-            } catch (NoItemSelectedException | NoBidAmountException | NoBidderNameException e) {
+            } catch (NoItemSelectedException | NoBidAmountException | NoBidderNameException | BidTooLowException e) {
                 setMessage(e.getMessage());
             } catch (RemoteException e) {
 
@@ -144,7 +144,7 @@ public class HomeController extends UnicastRemoteObject implements Initializable
         messageBoxTextArea.setText(messageFeed);
     }
 
-    private void placeBid() throws NoItemSelectedException, NoBidAmountException, RemoteException, NoBidderNameException {
+    private void placeBid() throws NoItemSelectedException, NoBidAmountException, RemoteException, NoBidderNameException, BidTooLowException {
         ItemObs item = itemTableView.getSelectionModel().getSelectedItem();
 
         if (item == null) {
@@ -159,7 +159,7 @@ public class HomeController extends UnicastRemoteObject implements Initializable
             throw new NoBidAmountException("Amount of bid is not set");
         }
 
-        if (getBidValue() < item.getCurrentBid().getValue()) {
+        if (getBidValue() <= item.getCurrentBid().getValue()) {
             throw new BidTooLowException("Bid has to be higher than existing one");
         }
 
