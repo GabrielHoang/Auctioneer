@@ -4,7 +4,6 @@ import auctioneer.model.Item;
 import auctioneer.server.repository.ItemRepository;
 import auctioneer.server.repository.ItemRepositoryStorageImpl;
 import auctioneer.server.utils.BidTooLowException;
-import auctioneer.server.utils.ItemAlreadyOnAuctionException;
 import auctioneer.server.utils.ItemNotFoundException;
 
 import java.rmi.RemoteException;
@@ -19,17 +18,12 @@ public class ItemManagerServiceImpl implements ItemManagerService {
     }
 
     @Override
-    public void placeItemForBid(String ownerName, String itemName, String itemDesc, double startBid, int auctionTime) throws ItemAlreadyOnAuctionException {
+    public void placeItemForBid(String ownerName, String itemName, String itemDesc, double startBid, int auctionTime) throws RemoteException {
         if (isItemAlreadyPresent(itemName)) {
-            throw new ItemAlreadyOnAuctionException("Item [" + itemName + "] is already present on auction");
+            throw new RemoteException("Item already present on auction");
         }
 
         itemRepository.add(new Item(ownerName, itemName, itemDesc, startBid, "no bidders", LocalDateTime.now().plusSeconds(auctionTime)));
-    }
-
-    @Override
-    public void delete(String itemName) {
-        itemRepository.delete(itemName);
     }
 
     @Override

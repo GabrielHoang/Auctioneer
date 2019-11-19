@@ -6,6 +6,7 @@ import auctioneer.model.Item;
 import auctioneer.server.repository.ItemRepositoryStorageImpl;
 import auctioneer.server.service.ItemManagerService;
 import auctioneer.server.service.ItemManagerServiceImpl;
+import auctioneer.server.utils.BidTooLowException;
 import auctioneer.server.utils.ItemAlreadyOnAuctionException;
 import auctioneer.server.utils.ItemNotFoundException;
 
@@ -35,7 +36,7 @@ public class EnglishAuction extends Auction implements IAuctionServer {
             itemManagerService.placeItemForBid("testOwner1", "item1", "itemDesc1", 10, 60);
             itemManagerService.placeItemForBid("testOwner1", "item2", "itemDesc2", 10, 60);
             itemManagerService.placeItemForBid("testOwner1", "item3", "itemDesc3", 10, 60);
-        } catch (ItemAlreadyOnAuctionException e) {
+        } catch (ItemAlreadyOnAuctionException | RemoteException e) {
             e.getMessage();
         }
     }
@@ -53,7 +54,7 @@ public class EnglishAuction extends Auction implements IAuctionServer {
     public void bidOnItem(String bidderName, String itemName, double bid) throws RemoteException {
         try {
             itemManagerService.bidOnItem(bidderName, itemName, bid);
-        } catch (ItemNotFoundException e) {
+        } catch (ItemNotFoundException | BidTooLowException e) {
             e.getMessage();
         }
     }

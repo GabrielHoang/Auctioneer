@@ -10,9 +10,7 @@ import java.util.Map;
 
 public interface ItemManagerService {
 
-    void placeItemForBid(String ownerName, String itemName, String itemDesc, double startBid, int auctionTime) throws ItemAlreadyOnAuctionException;
-
-    void delete(String itemName);
+    void placeItemForBid(String ownerName, String itemName, String itemDesc, double startBid, int auctionTime) throws ItemAlreadyOnAuctionException, RemoteException;
 
     Item get(String itemName) throws ItemNotFoundException;
 
