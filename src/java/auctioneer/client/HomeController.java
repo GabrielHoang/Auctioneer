@@ -6,6 +6,8 @@ import auctioneer.interfaces.IAuctionServer;
 import auctioneer.model.Item;
 import auctioneer.model.ItemObs;
 import auctioneer.server.utils.BidTooLowException;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -17,6 +19,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import javafx.util.converter.DoubleStringConverter;
 
 import java.io.IOException;
@@ -74,6 +77,9 @@ public class HomeController extends UnicastRemoteObject implements Initializable
 
     private ObservableList<String> strategies = FXCollections.observableArrayList();
 
+    private Timeline tableRefresher = new Timeline(new KeyFrame(Duration.seconds(3), event -> {
+        getItems();
+    }));
 
     private Stage addItemStage;
 
@@ -99,6 +105,8 @@ public class HomeController extends UnicastRemoteObject implements Initializable
         connectClient();
         getItems();
         itemTableView.setItems(items);
+        tableRefresher.setCycleCount(Timeline.INDEFINITE);
+        tableRefresher.play();
 
         itemNameColumn.setCellValueFactory(item -> item.getValue().getItemName());
         currentPriceColumn.setCellValueFactory(item -> item.getValue().getCurrentBid().asString());
