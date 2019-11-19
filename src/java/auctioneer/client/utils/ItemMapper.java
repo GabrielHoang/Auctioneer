@@ -1,4 +1,4 @@
-package auctioneer.client;
+package auctioneer.client.utils;
 
 import auctioneer.model.Item;
 import auctioneer.model.ItemObs;
