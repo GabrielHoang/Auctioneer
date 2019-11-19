@@ -1,9 +1,6 @@
 package auctioneer.client;
 
-import auctioneer.client.utils.AuctionHouseNotConnectedException;
-import auctioneer.client.utils.NoBidAmountException;
-import auctioneer.client.utils.NoBidderNameException;
-import auctioneer.client.utils.NoItemSelectedException;
+import auctioneer.client.utils.*;
 import auctioneer.interfaces.IAuctionListener;
 import auctioneer.interfaces.IAuctionServer;
 import auctioneer.model.Item;
@@ -14,9 +11,15 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.util.converter.DoubleStringConverter;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.net.URL;
 import java.rmi.NotBoundException;
@@ -25,6 +28,7 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ResourceBundle;
+import java.util.regex.Pattern;
 
 public class HomeController extends UnicastRemoteObject implements Initializable, Serializable, IAuctionListener {
 
@@ -48,28 +52,32 @@ public class HomeController extends UnicastRemoteObject implements Initializable
     private TextField bidderNameTextField;
 
     @FXML
-    private Label bidderNameLabel;
-
-    @FXML
-    private Label strategyLabel;
-
-    @FXML
-    private ChoiceBox<?> strategyChoiceBox;
-
-    @FXML
-    private Label bidAmountLabel;
+    private ChoiceBox<String> strategyChoiceBox;
 
     @FXML
     private TextField bidTextField;
 
     @FXML
+    private TextField maxBidTextField;
+
+    @FXML
     private TextArea messageBoxTextArea;
+
+    @FXML
+    private Button addItemButton;
 
     private ObservableList<ItemObs> items = FXCollections.observableArrayList();
 
     private IAuctionServer auctionServer;
 
     private String messageFeed = "";
+
+    private ObservableList<String> strategies = FXCollections.observableArrayList();
+
+
+    private Stage addItemStage;
+
+    private AddItemController addItemController;
 
     public HomeController() throws RemoteException {
     }
@@ -98,7 +106,20 @@ public class HomeController extends UnicastRemoteObject implements Initializable
 
         messageBoxTextArea.setWrapText(true);
 
+        strategies.addAll("auto bidder", "last minute", "manual");
+        strategyChoiceBox.setItems(strategies);
+        strategyChoiceBox.setValue("manual");
 
+        maxBidTextField.setTextFormatter(getDoubleFormatter());
+        maxBidTextField.setEditable(true);
+        strategyChoiceBox.setOnAction(event -> {
+            if (strategyChoiceBox.getSelectionModel().getSelectedItem().equals("auto bidder")) {
+//                AutoBidder autoBidder = new AutoBidder();
+//                autoBidder.activate();
+            }
+        });
+
+        bidTextField.setTextFormatter(getDoubleFormatter());
         bidButton.setOnAction(event -> {
             try {
                 placeBid();
@@ -109,6 +130,9 @@ public class HomeController extends UnicastRemoteObject implements Initializable
             }
         });
 
+        initializeItemAddWindow();
+
+        addItemButton.setOnAction(event -> addItemStage.show());
 
     }
 
@@ -129,6 +153,7 @@ public class HomeController extends UnicastRemoteObject implements Initializable
 
     private void getItems() {
         try {
+            items.clear();
             Item[] itemArray = auctionServer.getItems();
             for (Item item : itemArray) {
                 items.add(ItemMapper.itemToItemObs(item));
@@ -174,22 +199,79 @@ public class HomeController extends UnicastRemoteObject implements Initializable
         return Double.valueOf(bidTextField.getText());
     }
 
-//    class ItemUpdater extends UnicastRemoteObject implements Serializable,IAuctionListener{
+    public void closeAddItemWindow() {
+        addItemStage.close();
+        initializeItemAddWindow();
+    }
+
+    public void addItemToAuction(String ownerName, String itemName,
+                                 String itemDesc, double startBid, int auctionTime) {
+        try {
+            auctionServer.placeItemForBid(ownerName, itemName, itemDesc, startBid, auctionTime);
+            auctionServer.registerListener(this, itemName);
+            getItems();
+        } catch (RemoteException e) {
+            setMessage(e.getMessage());
+        }
+    }
+
+    private void initializeItemAddWindow() {
+        try {
+            addItemStage = new Stage();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/addItem.fxml"));
+            addItemStage.setTitle("Add new auction item");
+            addItemStage.initModality(Modality.APPLICATION_MODAL);
+            addItemStage.setScene(new Scene(loader.load()));
+
+            this.addItemController = loader.getController();
+            addItemController.setHomeController(this);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private TextFormatter<Double> getDoubleFormatter() {
+        return new TextFormatter<Double>(
+                new DoubleStringConverter(),
+                0D,
+                c -> Pattern.matches("\\d*", c.getText()) ? c : null);
+    }
+
+//    class AutoBidder implements Strategy {
 //
-//        ItemUpdater() throws RemoteException {
-//        }
+//        ObservableList<ItemObs> trackedItems;
+//        String bidder;
+//        Double maxBid;
 //
 //        @Override
-//        public void update(Item item) throws RemoteException {
-//            ItemObs updatedItem = items.stream()
-//                    .filter(itemObs -> item.getItemName().equals(itemObs.getItemName().getValue()))
-//                    .findFirst()
-//                    .orElse(null);
+//        public void activate() {
+//            bidder = bidderNameTextField.getText();
+//            maxBid = Double.parseDouble(maxBidTextField.getText());
+//            getItems();
+//            items.stream()
+//                    .filter(item -> item.getCurrentBidderName().getValue().equals(bidder))
+//                    .map(item -> trackedItems.add(item));
 //
-//            updatedItem.setCurrentBidderName(new SimpleStringProperty(item.getCurrentBidderName()));
-//            updatedItem.setCurrentBid(new SimpleDoubleProperty(item.getCurrentBid()));
-//            itemTableView.refresh();
+//            ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+//            executor.scheduleAtFixedRate(upbid,0, 2, TimeUnit.SECONDS);
 //        }
+
+//        Runnable upbid = () -> {
+//            System.out.println("Running upbid");
+//            getItems();
+//            for (ItemObs item : items) {
+//                for (ItemObs tracked :trackedItems) {
+//                    if (item.getItemName().getValue().equals(tracked.getItemName().getValue())
+//                    && !item.getCurrentBidderName().getValue().equals(tracked.getCurrentBidderName().getValue())) {
+//                        try {
+//                            auctionServer.bidOnItem(bidder, tracked.getItemName().getValue(), item.getCurrentBid().doubleValue()+1);
+//                        } catch (RemoteException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                }
+//            }
+//        };
 //    }
 }
 
