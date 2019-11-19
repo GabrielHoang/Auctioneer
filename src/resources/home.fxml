@@ -3,7 +3,7 @@
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<VBox xmlns:fx="http://javafx.com/fxml/1" prefHeight="523.0" prefWidth="795.0" xmlns="http://javafx.com/javafx/11.0.1"
+<VBox xmlns:fx="http://javafx.com/fxml" prefHeight="523.0" prefWidth="795.0" xmlns="http://javafx.com/javafx"
       fx:controller="auctioneer.client.HomeController">
   <children>
     <MenuBar prefHeight="36.0" prefWidth="527.0" VBox.vgrow="NEVER">
